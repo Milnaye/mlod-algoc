@@ -121,9 +121,9 @@ Winners* readWinners(FILE* inputFile)
 	rewind(inputFile);
 
 	// iteration over each winner of winners struct
-	for (IntWinnerSize iWinner = 0;	iWinner < winners->nbWinner; iWinner++)
+	for (Winner* iWinner = winners->winners; iWinner < winners->winners + winners->nbWinner; iWinner++)
 	{
-		readWinner(&winners->winners[iWinner], inputFile);
+		readWinner(iWinner, inputFile);
 	}
 	return winners;
 }
@@ -140,18 +140,20 @@ void printWinner(Winner* winner)
 
 void printWinners(Winners* winners, FILE* outputFile)
 {
-	for (IntWinnerSize iWinner = 0; iWinner < winners->nbWinner; iWinner++)
+	// iteration over each winner of winners struct
+	for (Winner* iWinner = winners->winners; iWinner < winners->winners + winners->nbWinner; iWinner++)
 	{
-		printWinnerIntoFile(&(winners->winners[iWinner]), outputFile);
+		printWinnerIntoFile(iWinner, outputFile);
 	}
 }
 
 void destroyWinners(Winners* winners)
 {
-	for (IntWinnerSize iWinner = 0; iWinner < winners->nbWinner; iWinner++)
+	// iteration over each winner of winners struct
+	for (Winner* iWinner = winners->winners; iWinner < winners->winners + winners->nbWinner; iWinner++)
 	{
-		free(winners->winners[iWinner].names);
-		free(winners->winners[iWinner].works);
+		free(iWinner->names);
+		free(iWinner->works);
 	}
 	free(winners->winners);
 	free(winners);
@@ -159,20 +161,20 @@ void destroyWinners(Winners* winners)
 
 void sortWinners(Winners* winners)
 {
-	Winner* winnerList = winners->winners;
 	Winner temp;
 	bool isSorted;
 	do
 	{
 		isSorted = true;
-		for (IntWinnerSize iWinner = 0; iWinner < (winners->nbWinner - 1) ; iWinner++)
+		// iteration over each winner of winners struct
+		for (Winner* iWinner = winners->winners; iWinner < winners->winners + winners->nbWinner - 1; iWinner++)
 		{
-			if (winnerList[iWinner].year > winnerList[iWinner+1].year)
+			if (iWinner->year > (iWinner+1)->year)
 			{
 				isSorted = false;
-				temp = winnerList[iWinner];
-				winnerList[iWinner] = winnerList[iWinner+1];
-				winnerList[iWinner+1] = temp;
+				temp = *iWinner;
+				*iWinner = *(iWinner+1);
+				*(iWinner+1) = temp;
 			}
 		}
 	} while (!isSorted);
@@ -181,11 +183,12 @@ void sortWinners(Winners* winners)
 // return the adress of corresponding winner, NULL if not found
 Winner* findWinnerOfYear(uint16_t year, Winners* winners)
 {
-	for (IntWinnerSize iWinner = 0; iWinner < winners->nbWinner; iWinner++)
+	// iteration over each winner of winners struct
+	for (Winner* iWinner = winners->winners; iWinner < winners->winners + winners->nbWinner; iWinner++)
 	{
-		if (winners->winners[iWinner].year == year)
+		if (iWinner->year == year)
 		{
-			return &winners->winners[iWinner];
+			return iWinner;
 		}
 	}
 	return NULL;
