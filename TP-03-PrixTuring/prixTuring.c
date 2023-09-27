@@ -291,8 +291,8 @@ int main(int argc, char** argv)
 			return EXIT_FAILURE;
 		}
 
-		char* inputFilename = argv[3];
-		char* outputFilename = argv[4];
+		char* inputFilename = argv[4];
+		char* outputFilename = argv[3];
 
 		Winners* winners = getWinnersFromFile(inputFilename);
 		if(winners == NULL)
