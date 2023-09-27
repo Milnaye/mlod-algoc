@@ -128,21 +128,21 @@ Winners* readWinners(FILE* inputFile)
 	return winners;
 }
 
-void printWinner(Winner* winner, FILE* outputFile)
+void printWinnerIntoFile(Winner* winner, FILE* outputFile)
 {
 	fprintf(outputFile, "%"PRIu16";%s;%s\n", winner->year, winner->names, winner->works);
 }
 
 void printWinner(Winner* winner)
 {
-	printf("%"PRIu16";%s;%s\n", winner->year, winner->names, winner->works);
+	printf("Winner(s) of year %"PRIu16": %s for their works in %s\n", winner->year, winner->names, winner->works);
 }
 
 void printWinners(Winners* winners, FILE* outputFile)
 {
 	for (IntWinnerSize iWinner = 0; iWinner < winners->nbWinner; iWinner++)
 	{
-		printWinner(&(winners->winners[iWinner]), outputFile);
+		printWinnerIntoFile(&(winners->winners[iWinner]), outputFile);
 	}
 }
 
@@ -157,25 +157,38 @@ void destroyWinners(Winners* winners)
 	free(winners);
 }
 
-Winner* findWinnerOfYear(uint16_t year, FILE* inputFilename)
+void sortWinners(Winners* winners)
 {
-	FILE* inputFile = fopen(inputFilename, "r");
-
-	if(!fileIsOk(inputFile))
+	Winner* winnerList = winners->winners;
+	Winner temp;
+	bool isSorted;
+	do
 	{
-		printf("File error\n");
-		return EXIT_FAILURE;
+		isSorted = true;
+		for (IntWinnerSize iWinner = 0; iWinner < (winners->nbWinner - 1) ; iWinner++)
+		{
+			if (winnerList[iWinner].year > winnerList[iWinner+1].year)
+			{
+				isSorted = false;
+				temp = winnerList[iWinner];
+				winnerList[iWinner] = winnerList[iWinner+1];
+				winnerList[iWinner+1] = temp;
+			}
+		}
+	} while (!isSorted);
+}
+
+// return the adress of corresponding winner, NULL if not found
+Winner* findWinnerOfYear(uint16_t year, Winners* winners)
+{
+	for (IntWinnerSize iWinner = 0; iWinner < winners->nbWinner; iWinner++)
+	{
+		if (winners->winners[iWinner].year == year)
+		{
+			return &winners->winners[iWinner];
+		}
 	}
-
-	Winners* winners = readWinners(inputFile);
-
-	fclose(inputFile);
-
-
-	destroyWinners(winners); // :)
-	winners = NULL;
-
-	return EXIT_SUCCESS;
+	return NULL;
 }
 
 Winners* getWinnersFromFile(char* filename)
@@ -212,12 +225,13 @@ void copyWinnersIntoFile(Winners* winners, char* outputFilename)
 
 int main(int argc, char** argv)
 {
+	// basic copy
 	if(argc == 3)
 	{
-		char* filename = argv[1];
+		char* inputFilename = argv[1];
 		char* outputFilename = argv[2];
 
-		Winners* winners = getWinnersFromFile(filename);
+		Winners* winners = getWinnersFromFile(inputFilename);
 		if(winners == NULL)
 		{
 			return EXIT_FAILURE;
@@ -229,22 +243,64 @@ int main(int argc, char** argv)
 		winners = NULL;
 		return EXIT_SUCCESS;
 	}
+
+	// search for year
 	if(argc == 4)
 	{
-		if(!strcmp(argv[1], "--info"))
+		if(strcmp(argv[1], "--info"))
 		{
-			printf("Unkown argument\n");
+			printf("Unkown argument: %s\n"
+				"Try: --info\n", argv[1]);
 			return EXIT_FAILURE;
 		}
-		uint16_t yearToFind = argv[2];
-		char* inputFilename = argv[1];
-		Winner* winnerFound= findWinnerOfYear(yearToFind, inputFilename);
+		uint16_t yearToFind = (uint16_t) strtoul(argv[2], NULL, 10); //convert char* to unsigned long
+		char* inputFilename = argv[3];
+
+		Winners* winners = getWinnersFromFile(inputFilename);
+
+		Winner* winnerFound = findWinnerOfYear(yearToFind, winners);
 		if(winnerFound == NULL)
 		{
 			printf("Year not found\n");
 		 	return EXIT_FAILURE;
 		}
+
 		printWinner(winnerFound);
+
+		destroyWinners(winners);
+		return EXIT_SUCCESS;
+	}
+
+	// copy with sort
+	if(argc == 5)
+	{
+		if(strcmp(argv[1], "--sort"))
+		{
+			printf("Unkown argument: %s\n"
+				"Try: --sort\n", argv[1]);
+			return EXIT_FAILURE;
+		}
+
+		if(strcmp(argv[2], "-o"))
+		{
+			printf("Unkown argument: %s\n"
+				"Try: -o\n", argv[1]);
+			return EXIT_FAILURE;
+		}
+
+		char* inputFilename = argv[3];
+		char* outputFilename = argv[4];
+
+		Winners* winners = getWinnersFromFile(inputFilename);
+		if(winners == NULL)
+		{
+			return EXIT_FAILURE;
+		}
+		sortWinners(winners);
+		copyWinnersIntoFile(winners, outputFilename);
+
+		destroyWinners(winners);
+		winners = NULL;
 		return EXIT_SUCCESS;
 	}
 
