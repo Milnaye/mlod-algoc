@@ -41,7 +41,7 @@ void afficheElement(Element e)
 void afficheListe_i(Liste l)
 {
 	Liste current = l;
-	while (estVide(current))
+	while (!estVide(current))
 	{
 		afficheElement(current->val);
 		current = current->suiv;
@@ -191,7 +191,7 @@ Liste retirePremier_i(Element v, Liste l)
 
 // version recursive
 Liste retirePremier_r(Element v, Liste l) {
-	if(l->val == v)
+	if(equalsElement(l->val, v))
 	{
 		Liste toReturn = l->suiv;
 		detruireElement(l->val);
@@ -204,7 +204,7 @@ Liste retirePremier_r(Element v, Liste l) {
 		return NULL;
 	}
 
-	if(l->suiv->val == v)
+	if(equalsElement(l->suiv->val, v))
 	{
 		Liste toRemove = l->suiv;
 		l->suiv = l->suiv->suiv;
