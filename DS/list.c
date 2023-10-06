@@ -44,10 +44,7 @@ void print_data(data_t data)
 // print data of list from first to last
 void list_print(const List *list)
 {
-    if(list_count(list) == 0)
-    {
-        return;
-    }
+    //assuming list is not NULL
     ListNode* current = list->first;
     while (current != NULL)
     {
@@ -59,14 +56,15 @@ void list_print(const List *list)
 
 // inserts item_data at *end* of a list
 void list_addlast(List *list, data_t item_data) {
+    //assuming list is not empty
     if(list_count(list) == 0)
     {
         list->first = node_create(item_data);
         list->last = list->first;
         return;
     }
-    // case list is empty
 
+    // list is not empty
     ListNode* oldLast = list->last;
     ListNode* newLast = node_create(item_data);
 
@@ -90,6 +88,7 @@ void destroyData(data_t data)
 
 void destroyList(List* list)
 {
+    //assuming list is not empty
     ListNode* current = list->first;
     ListNode* next = NULL;
 
@@ -111,6 +110,7 @@ data_t list_rmlast(List *list) {
     {
         return 0;
     }
+
     if(list_count(list) == 1)
     {
         ListNode* toRemove = list->last;
@@ -122,6 +122,7 @@ data_t list_rmlast(List *list) {
         return valueOfRemoved;
     }
 
+    //list contains 2 elements or more
     ListNode* toRemove = list->last;
     ListNode* newLast = list->last->prev;
 
