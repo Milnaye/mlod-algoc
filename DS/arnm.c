@@ -53,6 +53,7 @@ int* statistics(char sequenceNucleotides[])
 	const int nbNucleotidesDifferents = 4;
 	int* occurence = (int*) calloc(4, sizeof(int));;
 
+	// counting occurencies
 	for (size_t iNucleotide = 0; iNucleotide < strlen(sequenceNucleotides); iNucleotide++)
 	{
 		if(isNucleotide(sequenceNucleotides[iNucleotide]))
@@ -61,6 +62,7 @@ int* statistics(char sequenceNucleotides[])
 		}
 	}
 
+	// dividing by the sum
 	for (int iNucleotide = 0; iNucleotide < nbNucleotidesDifferents; iNucleotide++)
 	{
 		occurence[iNucleotide] = occurence[iNucleotide]*100 / strlen(sequenceNucleotides);
@@ -149,7 +151,7 @@ void destroyDifferences(Differences* differences)
 
 int main(void){
 
-	char sequenceDeNucleotides[]="ATGCATCCATCATGCATGTA";
+	char sequenceDeNucleotides[]="ATGCATCCATCATGCATGTA"; // a lot of CAT, meow
 
 	int* stats = statistics(sequenceDeNucleotides);
 	printStatistics(stats); printf("\n");
@@ -163,7 +165,7 @@ int main(void){
 	printf("%d\n",differences->differenceSize); printf("\n");
 
 	// Il manque un truc, papy va avoir des problèmes...
-	destroyDifferences(differences);
+	destroyDifferences(differences); // on a sauvé papy
 	differences = NULL;
 	return EXIT_SUCCESS;
 }
