@@ -81,16 +81,21 @@ int numberOfDifferencesBeetween(const char sequenceNucleotides1[], const char se
 	return nbDifferences;
 }
 
-Differences* computeDifferencesBeetween(const char sequenceNucleotides1[], const char sequenceNucleotides2[])
+Differences* createNewDifferences(int nbDifferences)
 {
-	//need refactoring here
 	Differences* differences = (Differences*) malloc(sizeof(Differences));
 
-	differences->differenceSize = numberOfDifferencesBeetween(sequenceNucleotides1, sequenceNucleotides2);
+	differences->differenceSize = nbDifferences;
 	differences->differenceTab = (Difference*) calloc(differences->differenceSize, sizeof(Difference));
 
-	int iDiff = 0;
+	return differences;
+}
 
+Differences* computeDifferencesBeetween(const char sequenceNucleotides1[], const char sequenceNucleotides2[])
+{
+	Differences* differences = createNewDifferences(numberOfDifferencesBeetween(sequenceNucleotides1, sequenceNucleotides2));
+
+	int iDiff = 0;
 	for (size_t iNucleotide = 0; iNucleotide < strlen(sequenceNucleotides1); iNucleotide++)
 	{
 		if(sequenceNucleotides1[iNucleotide] != sequenceNucleotides2[iNucleotide])
