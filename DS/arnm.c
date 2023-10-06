@@ -124,11 +124,16 @@ void printDifferences(Differences* differences)
 
 void printStatistics(int* stats)
 {
+	printf("< ");
 	for (size_t i = 0; i < strlen(NUCLEOTIDES); i++)
 	{
-		printf("%d ", stats[i]);
+		printf("%d", stats[i]);
+		if(i != strlen(NUCLEOTIDES) -1)
+		{
+			printf(",");
+		}
 	}
-	printf("\n");
+	printf(" >\n");
 }
 
 void destroyDifferences(Differences* differences)
